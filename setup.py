@@ -8,7 +8,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 setup(
     name='django-tenant-schemas',

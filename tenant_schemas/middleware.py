@@ -32,8 +32,13 @@ class TenantMiddleware(object):
             request.tenant = TenantModel.objects.get(domain_url=hostname)
             connection.set_tenant(request.tenant)
         except TenantModel.DoesNotExist:
-            raise self.TENANT_NOT_FOUND_EXCEPTION(
-                'No tenant for hostname "%s"' % hostname)
+            wildcard_tenant = TenantModel.objects.filter(domain_url='*')
+            if wildcard_tenant.count() == 1:
+                request.tenant = wildcard_tenant[0]
+                connection.set_tenant(request.tenant)
+            else:
+                raise self.TENANT_NOT_FOUND_EXCEPTION(
+                    'No tenant for hostname "%s"' % hostname)
 
         # Content type can no longer be cached as public and tenant schemas
         # have different models. If someone wants to change this, the cache
